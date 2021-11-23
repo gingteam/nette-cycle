@@ -27,6 +27,7 @@ class CycleOrmExtension extends CompilerExtension
 
     public function loadConfiguration()
     {
+        /** @var \stdClass */
         $config = $this->getConfig();
         $builder = $this->getContainerBuilder();
 

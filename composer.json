@@ -20,9 +20,11 @@
         "cycle/bootstrap": "^0.5.1"
     },
     "require-dev": {
-        "pestphp/pest": "^1.21"
+        "pestphp/pest": "^1.21",
+        "phpstan/phpstan": "^1.2"
     },
     "scripts": {
-        "test": "pest"
+        "test": "pest",
+        "phpstan": "phpstan analyse --level 6 src"
     }
 }
