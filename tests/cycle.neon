@@ -1,0 +1,4 @@
+cycle:
+    dsn: 'sqlite:database.db'
+    entityDir: '%entityDir%'
+    cache: '%entityDir%/cache'

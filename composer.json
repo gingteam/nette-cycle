@@ -1,0 +1,25 @@
+{
+    "name": "gingteam/nette-cycle",
+    "description": "Cycle ORM for Nette",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "GingTeam\\NetteCycle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ging-dev",
+            "email": "gingdz11012001@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "nette/di": "^3.0",
+        "cycle/bootstrap": "^0.5.1"
+    },
+    "require-dev": {
+        "pestphp/pest": "^1.21"
+    }
+}
