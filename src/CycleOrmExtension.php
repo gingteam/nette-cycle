@@ -19,8 +19,8 @@ class CycleOrmExtension extends CompilerExtension
             'dsn' => Expect::string()->required(),
             'username' => Expect::string()->default(''),
             'password' => Expect::string()->default(''),
-            'entityDir' => Expect::string()->required(),
-            'cache' => Expect::string()->nullable(),
+            'entityDirectory' => Expect::string()->required(),
+            'cacheDirectory' => Expect::string()->nullable(),
             'logger' => Expect::type(LoggerInterface::class)->nullable(),
         ]);
     }
@@ -30,24 +30,16 @@ class CycleOrmExtension extends CompilerExtension
         $config = $this->getConfig();
         $builder = $this->getContainerBuilder();
 
-        $cycleConfig = $builder->addDefinition($this->prefix('config'))
-            ->setFactory([Config::class, 'forDatabase'], [$config->dsn, $config->username, $config->password])
-            ->setAutowired(false);
+        $cycleConfig = Config::forDatabase($config->dsn, $config->username, $config->password);
+        $cycleConfig = $cycleConfig->withEntityDirectory($config->entityDirectory);
 
-        if (null !== $config->cache) {
-            $cycleConfig = $builder->addDefinition($this->prefix('cache'))
-                ->setFactory([$cycleConfig, 'withCacheDirectory'], [$config->cache])
-                ->setAutowired(false);
+        if (null !== $config->cacheDirectory) {
+            $cycleConfig = $cycleConfig->withCacheDirectory($config->cacheDirectory);
         }
 
         if (null !== $config->logger) {
-            $cycleConfig = $builder->addDefinition($this->prefix('logger'))
-                ->setFactory([$cycleConfig, 'withLogger'], [$config->logger])
-                ->setAutowired(false);
+            $cycleConfig = $cycleConfig->withLogger($config->logger);
         }
-
-        $cycleConfig = $builder->addDefinition($this->prefix('entity'))
-            ->setFactory([$cycleConfig, 'withEntityDirectory'], [$config->entityDir]);
 
         $builder->addDefinition($this->prefix('orm'))
             ->setFactory([Bootstrap::class, 'fromConfig'], [$cycleConfig]);
