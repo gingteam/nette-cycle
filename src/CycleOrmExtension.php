@@ -7,9 +7,9 @@ namespace GingTeam\NetteCycle;
 use Cycle\Bootstrap\Bootstrap;
 use Cycle\Bootstrap\Config;
 use Nette\DI\CompilerExtension;
+use Nette\DI\Definitions\Statement;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Psr\Log\LoggerInterface;
 
 class CycleOrmExtension extends CompilerExtension
 {
@@ -21,7 +21,10 @@ class CycleOrmExtension extends CompilerExtension
             'password' => Expect::string()->default(''),
             'entityDirectory' => Expect::string()->required(),
             'cacheDirectory' => Expect::string()->nullable(),
-            'logger' => Expect::type(LoggerInterface::class)->nullable(),
+            'logger' => Expect::anyOf(
+                Expect::string(),
+                Expect::type(Statement::class),
+            )->nullable(),
         ]);
     }
 
@@ -31,15 +34,32 @@ class CycleOrmExtension extends CompilerExtension
         $config = $this->getConfig();
         $builder = $this->getContainerBuilder();
 
-        $cycleConfig = Config::forDatabase($config->dsn, $config->username, $config->password);
-        $cycleConfig = $cycleConfig->withEntityDirectory($config->entityDirectory);
+        $cycleConfig = $builder->addDefinition($this->prefix('config'))
+            ->setFactory([Config::class, 'forDatabase'], [$config->dsn, $config->username, $config->password]);
+
+        $cycleConfig->addSetup('? = ?->?(?)', [
+            $cycleConfig,
+            $cycleConfig,
+            'withEntityDirectory',
+            $config->entityDirectory,
+        ]);
 
         if (null !== $config->cacheDirectory) {
-            $cycleConfig = $cycleConfig->withCacheDirectory($config->cacheDirectory);
+            $cycleConfig->addSetup('? = ?->?(?)', [
+                $cycleConfig,
+                $cycleConfig,
+                'withCacheDirectory',
+                $config->cacheDirectory,
+            ]);
         }
 
         if (null !== $config->logger) {
-            $cycleConfig = $cycleConfig->withLogger($config->logger);
+            $cycleConfig->addSetup('? = ?->?(?)', [
+                $cycleConfig,
+                $cycleConfig,
+                'withLogger',
+                $config->logger,
+            ]);
         }
 
         $builder->addDefinition($this->prefix('orm'))
