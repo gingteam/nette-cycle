@@ -37,29 +37,15 @@ class CycleOrmExtension extends CompilerExtension
         $cycleConfig = $builder->addDefinition($this->prefix('config'))
             ->setFactory([Config::class, 'forDatabase'], [$config->dsn, $config->username, $config->password]);
 
-        $cycleConfig->addSetup('? = ?->?(?)', [
-            $cycleConfig,
-            $cycleConfig,
-            'withEntityDirectory',
-            $config->entityDirectory,
-        ]);
-
-        if (null !== $config->cacheDirectory) {
-            $cycleConfig->addSetup('? = ?->?(?)', [
-                $cycleConfig,
-                $cycleConfig,
-                'withCacheDirectory',
-                $config->cacheDirectory,
-            ]);
-        }
-
-        if (null !== $config->logger) {
-            $cycleConfig->addSetup('? = ?->?(?)', [
-                $cycleConfig,
-                $cycleConfig,
-                'withLogger',
-                $config->logger,
-            ]);
+        foreach ([
+            'withLogger' => $config->logger,
+            'withCacheDirectory' => $config->cacheDirectory,
+            'withEntityDirectory' => $config->entityDirectory,
+        ] as $method => $value) {
+            if (null === $value) {
+                continue;
+            }
+            $cycleConfig->addSetup('? = ?->?(?)', [$cycleConfig, $cycleConfig, $method, $value]);
         }
 
         $builder->addDefinition($this->prefix('orm'))
