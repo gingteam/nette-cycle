@@ -1,4 +1,4 @@
 cycle:
-    dsn: 'sqlite:database.db'
-    entityDirectory: '%entityDir%'
-    cacheDirectory: '%entityDir%/cache'
+    dsn: sqlite:%root%/database.db
+    entityDirectory: %root%/entities
+    cacheDirectory: %root%/entities/cache

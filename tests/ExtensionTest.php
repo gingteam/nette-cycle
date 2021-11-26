@@ -12,7 +12,7 @@ test('extension', function () {
 
     $class = $loader->load(function (Compiler $compiler) {
         $compiler->addConfig([
-            'parameters' => ['entityDir' => __DIR__.'/entities'],
+            'parameters' => ['root' => __DIR__],
         ]);
         $compiler->addExtension('cycle', new CycleOrmExtension());
         $compiler->loadConfig(__DIR__.'/cycle.neon');
